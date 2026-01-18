@@ -33,47 +33,41 @@ jobs:
           chmod +x build_app.sh
           VERSION=${{ steps.version.outputs.version }} ./build_app.sh
 
-      # 5. 创建分发包
+      # 4. 创建分发包
       - name: Create Archive
         run: |
           cd build
           zip -r ClipMaster-${{ steps.version.outputs.version }}.zip ClipMaster.app
 
-      # 6. 生成变更日志
-      - name: Generate Changelog
-        id: changelog
-        run: |
-          # 获取所有提交
-          NOTES=$(git log --pretty=format:"- %s" HEAD | head -20)
-          echo "notes=$NOTES" >> $GITHUB_OUTPUT
-
-      # 7. 生成 Release Notes
-      - name: Generate Release Notes
-        run: |
-          cat > release_notes.md << 'EOF'
-          ## 🚀 ClipMaster ${{ steps.version.outputs.version }}
-
-          ### 📥 下载说明
-          1. 下载 `ClipMaster-${{ steps.version.outputs.version }}.zip`
-          2. 解压缩
-          3. 双击运行 ClipMaster.app
-          4. 在系统偏好设置中授权必要的权限
-
-          ### ⚙️ 系统要求
-          - macOS 13.0 或更高版本
-          - Apple Silicon (M1/M2/M3/M4)
-
-          ### 📝 变更日志
-          ${{ steps.changelog.outputs.notes }}
-          EOF
-
-      # 8. 创建 GitHub Release
+      # 5. 创建 GitHub Release
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.version.outputs.version }}
           name: ClipMaster v${{ steps.version.outputs.version }}
-          body_path: release_notes.md
+          body: |
+            ## 🚀 ClipMaster ${{ steps.version.outputs.version }}
+
+            ### 📥 下载说明
+            1. 下载 `ClipMaster-${{ steps.version.outputs.version }}.zip`
+            2. 解压缩
+            3. 双击运行 ClipMaster.app
+            4. 在系统偏好设置中授权必要的权限
+
+            ### ⚙️ 系统要求
+            - macOS 13.0 或更高版本
+            - Apple Silicon (M1/M2/M3/M4)
+
+            ### ✨ 主要功能
+            - 自动剪切板监听和记录
+            - 菜单栏快速访问
+            - 实时搜索和过滤
+            - 智能分类识别
+            - 隐私保护（应用黑名单）
+            - 置顶和收藏功能
+
+            ### 📝 变更日志
+            查看完整变更历史：https://github.com/NoBey/ClipMaster/commits/main
           files: |
             build/ClipMaster-${{ steps.version.outputs.version }}.zip
           draft: false
