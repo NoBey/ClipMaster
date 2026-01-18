@@ -161,6 +161,16 @@ cat > "$APP_PATH/Contents/Info.plist" << EOF
 </plist>
 EOF
 
+# 6. 签名应用（使用 ad-hoc 签名，避免"已损坏"错误）
+echo "🔒 正在签名应用..."
+codesign --force --deep --sign - "$APP_PATH" 2>/dev/null
+
+if [ $? -eq 0 ]; then
+    echo "✅ 应用签名成功"
+else
+    echo "⚠️  警告: 应用签名失败（可能需要先创建证书）"
+fi
+
 echo "✅ 应用包创建成功！"
 echo ""
 echo "📂 应用位置: $APP_PATH"
