@@ -8,41 +8,21 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test:
-    runs-on: macos-13
+  build:
+    runs-on: macos-latest
 
     steps:
       # 1. 检出代码
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      # 2. 设置 Swift 环境
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v1
-        with:
-          swift-version: "5.9"
-
-      # 3. 读取版本号
-      - name: Read Version
-        id: version
-        run: |
-          if [ -f VERSION ]; then
-            VERSION=$(cat VERSION | tr -d 'VERSION="')
-          else
-            VERSION="dev"
-          fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Building version: $VERSION"
-
-      # 4. 构建应用
+      # 2. 构建应用（使用系统自带的 Swift）
       - name: Build App
         run: |
           chmod +x build_app.sh
-          VERSION=${{ steps.version.outputs.version }} ./build_app.sh
+          ./build_app.sh
 
-      # 5. 验证构建产物
+      # 3. 验证构建产物
       - name: Verify Build
         run: |
           if [ ! -d "build/ClipMaster.app" ]; then
