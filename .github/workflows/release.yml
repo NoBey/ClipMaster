@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
       # 1. 检出代码
@@ -23,7 +23,7 @@ jobs:
       - name: Setup Swift
         uses: swift-actions/setup-swift@v1
         with:
-          swift-version: "5.10.1"
+          swift-version: "5.9"
 
       # 3. 提取版本号
       - name: Extract Version
