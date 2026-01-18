@@ -97,3 +97,9 @@ ClipMaster/
 - **Database**: SQLite 数据持久化
 - **Utilities**: 工具类和辅助功能
 # ClipMaster
+
+## CI/CD 测试
+
+- ✅ GitHub Actions CI 已配置
+- ✅ 自动构建和验证
+- 📦 Releases 自动发布
