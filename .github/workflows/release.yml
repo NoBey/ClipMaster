@@ -43,12 +43,8 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          if [ -n "$PREV_TAG" ]; then
-            NOTES=$(git log --pretty=format:"- %s" $PREV_TAG..HEAD)
-          else
-            NOTES=$(git log --pretty=format:"- %s" HEAD)
-          fi
+          # 获取所有提交
+          NOTES=$(git log --pretty=format:"- %s" HEAD | head -20)
           echo "notes=$NOTES" >> $GITHUB_OUTPUT
 
       # 7. 生成 Release Notes
