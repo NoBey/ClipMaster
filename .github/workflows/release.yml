@@ -1,0 +1,92 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+
+    steps:
+      # 1. 检出代码
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2. 设置 Swift 环境
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: "5.9"
+
+      # 3. 提取版本号
+      - name: Extract Version
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Releasing version: $VERSION"
+
+      # 4. 构建应用
+      - name: Build Release
+        run: |
+          chmod +x build_app.sh
+          VERSION=${{ steps.version.outputs.version }} ./build_app.sh
+
+      # 5. 创建分发包
+      - name: Create Archive
+        run: |
+          cd build
+          zip -r ClipMaster-${{ steps.version.outputs.version }}.zip ClipMaster.app
+
+      # 6. 生成变更日志
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            NOTES=$(git log --pretty=format:"- %s" $PREV_TAG..HEAD)
+          else
+            NOTES=$(git log --pretty=format:"- %s" HEAD)
+          fi
+          echo "notes=$NOTES" >> $GITHUB_OUTPUT
+
+      # 7. 生成 Release Notes
+      - name: Generate Release Notes
+        run: |
+          cat > release_notes.md << 'EOF'
+          ## 🚀 ClipMaster ${{ steps.version.outputs.version }}
+
+          ### 📥 下载说明
+          1. 下载 `ClipMaster-${{ steps.version.outputs.version }}.zip`
+          2. 解压缩
+          3. 双击运行 ClipMaster.app
+          4. 在系统偏好设置中授权必要的权限
+
+          ### ⚙️ 系统要求
+          - macOS 13.0 或更高版本
+          - Apple Silicon (M1/M2/M3/M4)
+
+          ### 📝 变更日志
+          ${{ steps.changelog.outputs.notes }}
+          EOF
+
+      # 8. 创建 GitHub Release
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: ClipMaster v${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          files: |
+            build/ClipMaster-${{ steps.version.outputs.version }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

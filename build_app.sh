@@ -15,6 +15,26 @@ echo "  ClipMaster 命令行打包工具"
 echo "=========================================="
 echo ""
 
+# 获取版本号（优先使用环境变量，其次是 VERSION 文件）
+if [ -n "$VERSION" ]; then
+    APP_VERSION="$VERSION"
+elif [ -f "$PROJECT_DIR/VERSION" ]; then
+    APP_VERSION=$(cat "$PROJECT_DIR/VERSION" | tr -d 'VERSION="')
+else
+    APP_VERSION="1.0.0"
+fi
+
+# 获取构建版本（使用 Git commit hash）
+if command -v git &> /dev/null; then
+    BUILD_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "1")
+else
+    BUILD_VERSION="1"
+fi
+
+echo "📌 App Version: $APP_VERSION"
+echo "🔖 Build Version: $BUILD_VERSION"
+echo ""
+
 # 清理旧的构建
 echo "🧹 清理旧的构建..."
 rm -rf "$BUILD_DIR"
@@ -106,7 +126,7 @@ else
 fi
 
 # 创建 Info.plist
-cat > "$APP_PATH/Contents/Info.plist" << 'EOF'
+cat > "$APP_PATH/Contents/Info.plist" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -114,15 +134,15 @@ cat > "$APP_PATH/Contents/Info.plist" << 'EOF'
     <key>CFBundleExecutable</key>
     <string>ClipMaster</string>
     <key>CFBundleIdentifier</key>
-    <string>com.example.ClipMaster</string>
+    <string>com.yaoo13.ClipMaster</string>
     <key>CFBundleName</key>
     <string>ClipMaster</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
+    <string>$APP_VERSION</string>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>$BUILD_VERSION</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleIconName</key>
