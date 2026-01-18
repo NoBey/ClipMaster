@@ -72,9 +72,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if !appDetection.hasAccessibilityPermission() {
             print("⚠️ 需要辅助功能权限")
 
-            // 显示权限请求对话框
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.showPermissionAlert()
+            // 检查是否已经提示过用户
+            let hasPromptedBefore = UserDefaults.standard.bool(forKey: "hasPromptedAccessibilityPermission")
+
+            if !hasPromptedBefore {
+                // 首次检测到无权限，显示提示
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.showPermissionAlert()
+                }
+            } else {
+                print("ℹ️ 用户已知晓需要辅助功能权限，不再提示")
             }
         } else {
             print("✅ 已获得辅助功能权限")
@@ -83,6 +90,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// 显示权限请求对话框
     private func showPermissionAlert() {
+        // 标记已经提示过用户
+        UserDefaults.standard.set(true, forKey: "hasPromptedAccessibilityPermission")
+
         let alert = NSAlert()
         alert.messageText = "需要辅助功能权限"
         alert.informativeText = """

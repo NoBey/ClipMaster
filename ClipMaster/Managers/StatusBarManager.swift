@@ -43,6 +43,9 @@ class StatusBarManager {
             // 设置点击事件
             button.action = #selector(statusBarButtonClicked)
             button.target = self
+
+            // 启用右键菜单
+            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
         }
 
         print("✅ 状态栏图标已创建")
@@ -56,8 +59,81 @@ class StatusBarManager {
             return
         }
 
-        // 切换 Popover 显示状态
-        popoverManager.toggle(from: button)
+        // 获取当前事件
+        let event = NSApp.currentEvent
+
+        // 判断是否为右键点击
+        if event?.type == .rightMouseUp {
+            // 显示右键菜单
+            showContextMenu(at: button.bounds.origin)
+        } else {
+            // 左键点击：切换 Popover 显示状态
+            popoverManager.toggle(from: button)
+        }
+    }
+
+    // MARK: - 右键菜单
+
+    /// 显示右键菜单
+    private func showContextMenu(at point: NSPoint) {
+        let menu = NSMenu()
+
+        // 关于
+        let aboutItem = NSMenuItem(
+            title: "关于 ClipMaster",
+            action: #selector(showAbout),
+            keyEquivalent: ""
+        )
+        aboutItem.target = self
+        menu.addItem(aboutItem)
+
+        menu.addItem(NSMenuItem.separator())
+
+        // 退出
+        let quitItem = NSMenuItem(
+            title: "退出 ClipMaster",
+            action: #selector(quitApp),
+            keyEquivalent: "q"
+        )
+        quitItem.target = self
+        menu.addItem(quitItem)
+
+        // 显示菜单
+        if let button = statusItem?.button {
+            // 获取屏幕信息以正确计算位置
+            if let window = button.window {
+                let windowFrame = window.frame
+                // 菜单显示在状态栏图标下方，与左边缘对齐
+                menu.popUp(positioning: nil, at: NSPoint(x: 0, y: windowFrame.height), in: button)
+            } else {
+                // 备用方案
+                menu.popUp(positioning: menu.item(at: 0), at: NSPoint(x: 0, y: button.bounds.height + 5), in: button)
+            }
+        }
+    }
+
+    // MARK: - 菜单动作
+
+    /// 显示关于对话框
+    @objc private func showAbout() {
+        let alert = NSAlert()
+        alert.messageText = "ClipMaster"
+        alert.informativeText = """
+        版本: 1.0
+
+        一款 macOS 剪切板管理工具
+        核心价值: 无感记录、极速检索、一键回填
+
+        © 2025 ClipMaster
+        """
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "确定")
+        alert.runModal()
+    }
+
+    /// 退出应用
+    @objc private func quitApp() {
+        NSApp.terminate(nil)
     }
 
     // MARK: - 公开方法

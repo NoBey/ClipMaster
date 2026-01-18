@@ -68,6 +68,43 @@ mkdir -p "$APP_PATH/Contents/Resources"
 # 复制可执行文件
 cp "$BUILD_DIR/$PROJECT_NAME" "$APP_PATH/Contents/MacOS/"
 
+# 编译并复制 Assets.xcassets
+echo "📦 处理应用图标..."
+ASSETS_PATH="$PROJECT_DIR/ClipMaster/Resources/Assets.xcassets"
+APPICONSET="$ASSETS_PATH/AppIcon.appiconset"
+
+if [ -d "$APPICONSET" ]; then
+    # 创建临时 iconset 目录
+    TEMP_ICONSET="$BUILD_DIR/AppIcon.iconset"
+    rm -rf "$TEMP_ICONSET"
+    mkdir -p "$TEMP_ICONSET"
+
+    # 复制并重命名图标文件为 macOS iconset 格式
+    cd "$APPICONSET"
+    cp 16.png "$TEMP_ICONSET/icon_16x16.png" 2>/dev/null
+    cp 32.png "$TEMP_ICONSET/icon_16x16@2x.png" 2>/dev/null
+    cp 32.png "$TEMP_ICONSET/icon_32x32.png" 2>/dev/null
+    cp 64.png "$TEMP_ICONSET/icon_32x32@2x.png" 2>/dev/null
+    cp 128.png "$TEMP_ICONSET/icon_128x128.png" 2>/dev/null
+    cp 256.png "$TEMP_ICONSET/icon_128x128@2x.png" 2>/dev/null
+    cp 256.png "$TEMP_ICONSET/icon_256x256.png" 2>/dev/null
+    cp 512.png "$TEMP_ICONSET/icon_256x256@2x.png" 2>/dev/null
+    cp 512.png "$TEMP_ICONSET/icon_512x512.png" 2>/dev/null
+    cp 1024.png "$TEMP_ICONSET/icon_512x512@2x.png" 2>/dev/null
+
+    # 使用 iconutil 生成 .icns 文件
+    iconutil -c icns "$TEMP_ICONSET" -o "$BUILD_DIR/AppIcon.icns" 2>/dev/null
+
+    if [ -f "$BUILD_DIR/AppIcon.icns" ]; then
+        cp "$BUILD_DIR/AppIcon.icns" "$APP_PATH/Contents/Resources/"
+        echo "✅ 图标资源已添加 (AppIcon.icns)"
+    else
+        echo "⚠️  警告: AppIcon.icns 未生成"
+    fi
+else
+    echo "⚠️  警告: 未找到 AppIcon.appiconset"
+fi
+
 # 创建 Info.plist
 cat > "$APP_PATH/Contents/Info.plist" << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -86,6 +123,10 @@ cat > "$APP_PATH/Contents/Info.plist" << 'EOF'
     <string>1.0</string>
     <key>CFBundleVersion</key>
     <string>1</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>
