@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- 辅助功能权限说明 -->
+    <key>NSAccessibilityUsageDescription</key>
+    <string>需要辅助功能权限以获取前台应用信息,实现隐私保护功能</string>
+
+    <!-- Apple Events 权限说明 -->
+    <key>NSAppleEventsUsageDescription</key>
+    <string>需要脚本权限以检测前台应用</string>
+
+    <!-- 后台运行权限 -->
+    <key>NSBackgroundAssetURLRequest</key>
+    <true/>
+
+    <!-- 应用沙盒配置 (可选) -->
+    <!-- 如果启用沙盒,需要添加以下权限 -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+
+    <!-- 其他系统配置 -->
+    <key>LSMinimumSystemVersion</key>
+    <string>12.0</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2025. All rights reserved.</string>
+
+    <!-- 禁用 App Nap (确保后台运行) -->
+    <key>NSSupportsAutomaticTermination</key>
+    <false/>
+
+    <key>NSSupportsSuddenTermination</key>
+    <false/>
+</dict>
+</plist>

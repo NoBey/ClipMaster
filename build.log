@@ -1,0 +1,83 @@
+ClipMaster/Services/ClipboardMonitor.swift:161:13: warning: result of call to 'deleteAll()' is unused [#no-usage]
+159 |     /// 清空所有历史记录
+160 |     func clearAllHistory() {
+161 |         dao.deleteAll()
+    |             `- warning: result of call to 'deleteAll()' is unused [#no-usage]
+162 |         print("⚠️ 所有历史记录已清空")
+163 |     }
+ClipMaster/Views/ClipListRow.swift:95:24: warning: value 'sourceApp' was defined but never used; consider replacing with boolean test [#no-usage]
+ 93 |             HStack(spacing: 6) {
+ 94 |                 // 来源应用
+ 95 |                 if let sourceApp = item.sourceApp {
+    |                        `- warning: value 'sourceApp' was defined but never used; consider replacing with boolean test [#no-usage]
+ 96 |                     HStack(spacing: 4) {
+ 97 |                         Image(systemName: "app")
+ClipMaster/Database/DatabaseManager.swift:105:9: warning: result of call to 'executeSQL' is unused [#no-usage]
+103 |         """
+104 | 
+105 |         executeSQL(createClipsTableSQL)
+    |         `- warning: result of call to 'executeSQL' is unused [#no-usage]
+106 |         executeSQL(createBlacklistTableSQL)
+107 |     }
+
+ClipMaster/Database/DatabaseManager.swift:106:9: warning: result of call to 'executeSQL' is unused [#no-usage]
+104 | 
+105 |         executeSQL(createClipsTableSQL)
+106 |         executeSQL(createBlacklistTableSQL)
+    |         `- warning: result of call to 'executeSQL' is unused [#no-usage]
+107 |     }
+108 | 
+
+ClipMaster/Database/DatabaseManager.swift:148:26: warning: result of call to 'withUnsafeBytes' is unused [#no-usage]
+146 |                     sqlite3_bind_int64(statement, paramIndex, number)
+147 |                 case let data as Data:
+148 |                     data.withUnsafeBytes { bytes in
+    |                          `- warning: result of call to 'withUnsafeBytes' is unused [#no-usage]
+149 |                         sqlite3_bind_blob(statement, paramIndex, bytes.baseAddress, Int32(data.count), nil)
+150 |                     }
+
+ClipMaster/Database/DatabaseManager.swift:205:9: warning: result of call to 'executeSQL' is unused [#no-usage]
+203 |     /// 删除所有数据 (用于测试或重置)
+204 |     func deleteAllData() {
+205 |         executeSQL("DELETE FROM clips;")
+    |         `- warning: result of call to 'executeSQL' is unused [#no-usage]
+206 |         executeSQL("DELETE FROM blacklist_apps;")
+207 |         print("⚠️ 所有数据已清除")
+
+ClipMaster/Database/DatabaseManager.swift:206:9: warning: result of call to 'executeSQL' is unused [#no-usage]
+204 |     func deleteAllData() {
+205 |         executeSQL("DELETE FROM clips;")
+206 |         executeSQL("DELETE FROM blacklist_apps;")
+    |         `- warning: result of call to 'executeSQL' is unused [#no-usage]
+207 |         print("⚠️ 所有数据已清除")
+208 |     }
+ClipMaster/Database/ClipItemDAO.swift:50:26: warning: result of call to 'withUnsafeBytes' is unused [#no-usage]
+ 48 | 
+ 49 |         if let previewImage = item.previewImage {
+ 50 |             previewImage.withUnsafeBytes { bytes in
+    |                          `- warning: result of call to 'withUnsafeBytes' is unused [#no-usage]
+ 51 |                 sqlite3_bind_blob(statement, 6, bytes.baseAddress, Int32(previewImage.count), nil)
+ 52 |             }
+ClipMaster/Database/DatabaseSetup.swift:15:13: warning: initialization of immutable value 'db' was never used; consider replacing with assignment to '_' or removing it [#no-usage]
+13 |     /// 初始化数据库
+14 |     static func setup() {
+15 |         let db = DatabaseManager.shared
+   |             `- warning: initialization of immutable value 'db' was never used; consider replacing with assignment to '_' or removing it [#no-usage]
+16 | 
+17 |         // 插入默认黑名单应用
+
+ClipMaster/Database/DatabaseSetup.swift:34:33: warning: result of call to 'insert(bundleId:appName:)' is unused [#no-usage]
+32 | 
+33 |         for app in defaultApps {
+34 |             BlacklistDAO.shared.insert(bundleId: app.bundleId, appName: app.appName)
+   |                                 `- warning: result of call to 'insert(bundleId:appName:)' is unused [#no-usage]
+35 |         }
+36 | 
+
+ClipMaster/Database/DatabaseSetup.swift:49:13: warning: initialization of immutable value 'timestamp' was never used; consider replacing with assignment to '_' or removing it [#no-usage]
+47 |     static func cleanupOldData() {
+48 |         let thirtyDaysAgo = Date().addingTimeInterval(-30 * 24 * 60 * 60)
+49 |         let timestamp = Int64(thirtyDaysAgo.timeIntervalSince1970)
+   |             `- warning: initialization of immutable value 'timestamp' was never used; consider replacing with assignment to '_' or removing it [#no-usage]
+50 | 
+51 |         let sql = "DELETE FROM clips WHERE timestamp < ? AND is_pinned = 0;"
